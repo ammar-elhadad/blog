@@ -4,11 +4,11 @@
 
 export const SITE = {
   /** Brand shown in the header (latin). */
-  name: 'ronin',
+  name: 'saPWNa',
   /** Kanji shown next to the brand — 侍 = samurai, 浪人 = ronin, 道 = the way. */
   kanji: '侍',
   /** Big handle on the home hero. */
-  handle: 'r0nin',
+  handle: 'saPWNa',
   /** One-liner under the hero. */
   tagline:
     'Offensive security notes from the dojo — HTB & machine writeups, CTF challenges, CVE research, and field cheatsheets.',
@@ -16,14 +16,14 @@ export const SITE = {
   description:
     'Penetration testing blog: HTB/machine writeups, CTF challenge writeups, CVE research, and security cheatsheets.',
   /** Default author for posts/RSS. */
-  author: 'r0nin',
+  author: 'ammar',
   /** Footer + about links. Leave a value empty ('') to hide it. */
   socials: {
-    github: 'https://github.com/your-username',
+    github: 'https://github.com/ammar-elhadad',
     twitter: '',
-    hackthebox: '',
+    hackthebox: 'https://app.hackthebox.com/users/2445202',
     mastodon: '',
-    email: 'mailto:you@example.com',
+    email: 'ammarellhadad@gmail.com',
   },
 } as const;
 
