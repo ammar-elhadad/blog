@@ -11,8 +11,8 @@ import sitemap from '@astrojs/sitemap';
 //       site: 'https://<user>.github.io',  base: '/<repo-name>/'
 // The deploy workflow + the SITE/BASE below must agree. See README.md.
 // ──────────────────────────────────────────────────────────────────────────
-const SITE = 'https://your-username.github.io';
-const BASE = '/';
+const SITE = 'https://ammar-elhadad.github.io';
+const BASE = '/blog/';
 
 export default defineConfig({
   site: SITE,
