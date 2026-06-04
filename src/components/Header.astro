@@ -1,0 +1,40 @@
+---
+import { SITE, NAV } from '../consts';
+import { href } from '../utils';
+
+const path = Astro.url.pathname.replace(/\/$/, '');
+const isActive = (link: string) => {
+  const target = href(link).replace(/\/$/, '');
+  return path === target || (link !== '/' && path.startsWith(target));
+};
+---
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href={href('/')} aria-label={`${SITE.name} — home`}>
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="15" r="9" fill="#c1121f" opacity="0.18" />
+        <g fill="#e63946">
+          <path d="M5 8 q11 -3 22 0 l-1.5 3 q-9.5 -2.4 -19 0 Z" />
+          <rect x="7.5" y="13" width="17" height="2.6" rx="0.6" />
+          <rect x="9" y="11" width="2.6" height="16" rx="0.8" />
+          <rect x="20.4" y="11" width="2.6" height="16" rx="0.8" />
+        </g>
+      </svg>
+      <span class="name">{SITE.name}<b>{SITE.kanji}</b></span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      {
+        NAV.map((item) => (
+          <a
+            href={href(item.href)}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>

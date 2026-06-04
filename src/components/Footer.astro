@@ -1,0 +1,34 @@
+---
+import { SITE } from '../consts';
+import { href } from '../utils';
+
+const year = new Date().getFullYear();
+const socials = Object.entries(SITE.socials).filter(([, url]) => url);
+const labels: Record<string, string> = {
+  github: 'GitHub',
+  twitter: 'X',
+  hackthebox: 'HTB',
+  mastodon: 'Mastodon',
+  email: 'Email',
+};
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <span>
+      © {year} <span class="kanji">{SITE.kanji}</span> {SITE.name} —
+      <a href={href('/rss.xml')}>RSS</a>. Stay sharp.
+    </span>
+    {
+      socials.length > 0 && (
+        <span class="socials">
+          {socials.map(([key, url]) => (
+            <a href={url} rel="me noopener" target="_blank">
+              {labels[key] ?? key}
+            </a>
+          ))}
+        </span>
+      )
+    }
+  </div>
+</footer>

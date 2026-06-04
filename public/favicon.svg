@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="torii">
+  <rect width="32" height="32" rx="6" fill="#0a0a0b"/>
+  <!-- hinomaru sun -->
+  <circle cx="16" cy="15" r="9" fill="#c1121f" opacity="0.18"/>
+  <!-- torii gate -->
+  <g fill="#e63946">
+    <!-- top lintel (kasagi) -->
+    <path d="M5 8 q11 -3 22 0 l-1.5 3 q-9.5 -2.4 -19 0 Z"/>
+    <!-- second beam (nuki) -->
+    <rect x="7.5" y="13" width="17" height="2.6" rx="0.6"/>
+    <!-- pillars -->
+    <rect x="9" y="11" width="2.6" height="16" rx="0.8"/>
+    <rect x="20.4" y="11" width="2.6" height="16" rx="0.8"/>
+  </g>
+</svg>

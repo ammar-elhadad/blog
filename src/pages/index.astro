@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE, SECTIONS } from '../consts';
+import { href } from '../utils';
+import { getAllPosts, pillFor } from '../posts';
+
+const posts = (await getAllPosts()).slice(0, 6);
+const sectionKeys = Object.keys(SECTIONS) as (keyof typeof SECTIONS)[];
+---
+
+<BaseLayout title={SITE.name} description={SITE.description}>
+  <section class="hero">
+    <div class="hinomaru" aria-hidden="true"></div>
+    <p class="section-eyebrow">侍 // offensive security</p>
+    <h1 class="handle">{SITE.handle.slice(0, -1)}<b>{SITE.handle.slice(-1)}</b></h1>
+    <p class="tagline">{SITE.tagline}</p>
+    <div class="cta">
+      <a class="btn primary" href={href('/htb')}>Read writeups</a>
+      <a class="btn" href={href('/about')}>whoami</a>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- section index -->
+  <div class="card-grid" style="margin-bottom:3rem;">
+    {
+      sectionKeys.map((key) => (
+        <a class="post-card" href={href(SECTIONS[key].href)} style="text-decoration:none;">
+          <div class="meta">
+            <span class={`badge ${key}`}>{key}</span>
+            <span class="kanji" style="font-size:1.4rem;">{SECTIONS[key].kanji}</span>
+          </div>
+          <h3 style="color:var(--fg);">{SECTIONS[key].label}</h3>
+          <p class="excerpt">{SECTIONS[key].blurb}</p>
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="page-head">
+    <p class="section-eyebrow">latest</p>
+    <h1>Recent drops</h1>
+  </div>
+
+  {
+    posts.length === 0 ? (
+      <p class="muted">No posts yet — add markdown files under <code>src/content/</code>.</p>
+    ) : (
+      <div class="card-grid">
+        {posts.map((p) => (
+          <PostCard
+            section={p.section}
+            title={p.data.title}
+            description={p.data.description}
+            url={p.url}
+            pubDate={p.data.pubDate}
+            tags={p.data.tags}
+            pill={pillFor(p)}
+          />
+        ))}
+      </div>
+    )
+  }
+</BaseLayout>

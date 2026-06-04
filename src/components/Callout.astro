@@ -1,0 +1,28 @@
+---
+// Usage in MDX:  <Callout type="exploit" title="PoC">...</Callout>
+interface Props {
+  type?: 'info' | 'warning' | 'danger' | 'exploit';
+  title?: string;
+}
+const { type = 'info', title } = Astro.props;
+const icons: Record<string, string> = {
+  info: 'ℹ',
+  warning: '⚠',
+  danger: '☠',
+  exploit: '⚔',
+};
+const fallback: Record<string, string> = {
+  info: 'Note',
+  warning: 'Warning',
+  danger: 'Danger',
+  exploit: 'Exploit',
+};
+---
+
+<aside class="callout" data-type={type}>
+  <p class="callout-title">
+    <span aria-hidden="true">{icons[type]}</span>
+    {title ?? fallback[type]}
+  </p>
+  <slot />
+</aside>

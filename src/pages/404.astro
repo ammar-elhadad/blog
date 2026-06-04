@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { href } from '../utils';
+---
+
+<BaseLayout title="404" description="Lost your way, ronin?">
+  <div class="notfound">
+    <div class="big">迷</div>
+    <h1>404 — masterless path</h1>
+    <p class="muted">
+      This page wanders without a master. The link is broken or the page has
+      been retired.
+    </p>
+    <p style="margin-top:1.5rem;">
+      <a class="btn primary" href={href('/')}>Return to the dojo</a>
+    </p>
+  </div>
+</BaseLayout>

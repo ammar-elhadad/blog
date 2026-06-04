@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+
+const socials = Object.entries(SITE.socials).filter(([, url]) => url);
+const labels: Record<string, string> = {
+  github: 'GitHub',
+  twitter: 'X / Twitter',
+  hackthebox: 'Hack The Box',
+  mastodon: 'Mastodon',
+  email: 'Email',
+};
+---
+
+<BaseLayout title="whoami" description={`About ${SITE.name}.`} read>
+  <div class="page-head">
+    <p class="section-eyebrow">$ whoami</p>
+    <h1>{SITE.name} <span class="kanji">{SITE.kanji}</span></h1>
+  </div>
+
+  <div class="prose">
+    <p>
+      I'm <strong>{SITE.handle}</strong> — a penetration tester documenting the
+      path. This is my dojo: a place to sharpen technique through machine
+      writeups, CTF challenges, CVE research, and field notes.
+    </p>
+
+    <h2>The way</h2>
+    <p>
+      <em>Replace this with your story.</em> What got you into offensive
+      security, what you focus on (web, AD, binary exploitation, cloud…),
+      certs you hold or are chasing (OSCP, CPTS, …), and what readers can expect.
+    </p>
+
+    <h2>Disclaimer</h2>
+    <blockquote>
+      Everything here is for education and authorized testing only. Targets in
+      writeups are intentionally vulnerable lab machines or scoped engagements.
+      Never test systems you don't have explicit permission to test.
+    </blockquote>
+
+    <h2>Contact</h2>
+    {
+      socials.length > 0 ? (
+        <ul>
+          {socials.map(([key, url]) => (
+            <li>
+              {labels[key] ?? key}: <a href={url}>{url.replace('mailto:', '')}</a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="muted">Add your links in <code>src/consts.ts</code>.</p>
+      )
+    }
+  </div>
+</BaseLayout>

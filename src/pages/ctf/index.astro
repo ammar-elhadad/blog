@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { SECTIONS } from '../../consts';
+import { getSectionPosts, pillFor } from '../../posts';
+
+const section = 'ctf' as const;
+const meta = SECTIONS[section];
+const posts = await getSectionPosts(section);
+---
+
+<BaseLayout title={meta.label} description={meta.blurb}>
+  <div class="page-head">
+    <p class="section-eyebrow">{section}</p>
+    <h1>{meta.label} <span class="kanji">{meta.kanji}</span></h1>
+    <p>{meta.blurb}</p>
+  </div>
+
+  {
+    posts.length === 0 ? (
+      <p class="muted">No challenges yet.</p>
+    ) : (
+      <div class="card-grid">
+        {posts.map((p) => (
+          <PostCard
+            section={p.section}
+            title={p.data.title}
+            description={p.data.description}
+            url={p.url}
+            pubDate={p.data.pubDate}
+            tags={p.data.tags}
+            pill={pillFor(p)}
+          />
+        ))}
+      </div>
+    )
+  }
+</BaseLayout>

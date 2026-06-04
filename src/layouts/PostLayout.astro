@@ -1,0 +1,170 @@
+---
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import { href } from '../utils';
+import type { SectionKey } from '../consts';
+
+interface NavLink {
+  url: string;
+  title: string;
+}
+
+interface Props {
+  section: SectionKey;
+  headings: MarkdownHeading[];
+  readingTime?: string;
+  prev?: NavLink;
+  next?: NavLink;
+  data: {
+    title: string;
+    description?: string;
+    pubDate: Date;
+    updatedDate?: Date;
+    tags?: string[];
+    // section-specific (all optional)
+    machine?: string;
+    os?: string;
+    difficulty?: string;
+    platform?: string;
+    techniques?: string[];
+    retired?: boolean;
+    event?: string;
+    category?: string;
+    points?: number;
+    team?: string;
+    cveId?: string;
+    cvss?: number;
+    severity?: string;
+    affectedProduct?: string;
+    vulnType?: string;
+    disclosureDate?: Date;
+    topic?: string;
+  };
+}
+
+const { section, headings, readingTime, prev, next, data } = Astro.props;
+
+const badgeLabel: Record<SectionKey, string> = {
+  htb: 'writeup',
+  ctf: 'ctf',
+  cve: 'cve',
+  notes: 'notes',
+};
+
+// difficulty / severity pill
+let pill: { kind: 'level' | 'sev'; value: string } | undefined;
+if ((section === 'htb' || section === 'ctf') && data.difficulty)
+  pill = { kind: 'level', value: data.difficulty };
+if (section === 'cve' && data.severity) pill = { kind: 'sev', value: data.severity };
+
+// metabox rows per section
+type Row = [string, string];
+const rows: Row[] = [];
+if (section === 'htb') {
+  if (data.machine) rows.push(['Machine', data.machine]);
+  if (data.platform) rows.push(['Platform', data.platform]);
+  if (data.os) rows.push(['OS', data.os]);
+  if (data.difficulty) rows.push(['Difficulty', data.difficulty]);
+  rows.push(['Status', data.retired ? 'Retired' : 'Active']);
+  if (data.techniques?.length) rows.push(['Techniques', data.techniques.join(', ')]);
+}
+if (section === 'ctf') {
+  if (data.event) rows.push(['Event', data.event]);
+  if (data.category) rows.push(['Category', data.category]);
+  if (data.difficulty) rows.push(['Difficulty', data.difficulty]);
+  if (typeof data.points === 'number') rows.push(['Points', String(data.points)]);
+  if (data.team) rows.push(['Team', data.team]);
+}
+if (section === 'cve') {
+  if (data.cveId) rows.push(['CVE', data.cveId]);
+  if (typeof data.cvss === 'number') rows.push(['CVSS', data.cvss.toFixed(1)]);
+  if (data.severity) rows.push(['Severity', data.severity]);
+  if (data.affectedProduct) rows.push(['Affected', data.affectedProduct]);
+  if (data.vulnType) rows.push(['Class', data.vulnType]);
+  if (data.disclosureDate)
+    rows.push(['Disclosed', data.disclosureDate.toISOString().split('T')[0]]);
+}
+if (section === 'notes' && data.topic) rows.push(['Topic', data.topic]);
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  type="article"
+  publishDate={data.pubDate}
+>
+  <article class="post-layout">
+    <div>
+      <header class="page-head">
+        <div class="meta" style="display:flex;gap:.6rem;align-items:center;">
+          <span class={`badge ${section}`}>{badgeLabel[section]}</span>
+          {
+            pill && (
+              <span
+                class="pill"
+                data-level={pill.kind === 'level' ? pill.value : undefined}
+                data-sev={pill.kind === 'sev' ? pill.value : undefined}
+              >
+                {pill.value}
+              </span>
+            )
+          }
+        </div>
+        <h1>{data.title}</h1>
+        {data.description && <p>{data.description}</p>}
+        <div class="post-meta">
+          <FormattedDate date={data.pubDate} />
+          {
+            data.updatedDate && (
+              <>
+                <span class="dot">·</span>
+                <span>updated <FormattedDate date={data.updatedDate} /></span>
+              </>
+            )
+          }
+          {readingTime && (<><span class="dot">·</span><span>{readingTime}</span></>)}
+        </div>
+      </header>
+
+      {
+        rows.length > 0 && (
+          <dl class="metabox">
+            {rows.map(([k, v]) => (
+              <>
+                <dt>{k}</dt>
+                <dd>{v}</dd>
+              </>
+            ))}
+          </dl>
+        )
+      }
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      {
+        data.tags?.length ? (
+          <div class="tags" style="margin-top:2rem;">
+            {data.tags.map((t) => (
+              <a class="tag" href={href(`/tags/${t}`)}>{t}</a>
+            ))}
+          </div>
+        ) : null
+      }
+
+      {
+        (prev || next) && (
+          <nav class="prevnext">
+            {prev ? <a href={href(prev.url)}>← {prev.title}</a> : <span />}
+            {next ? <a href={href(next.url)}>{next.title} →</a> : <span />}
+          </nav>
+        )
+      }
+    </div>
+
+    <TableOfContents headings={headings} />
+  </article>
+</BaseLayout>

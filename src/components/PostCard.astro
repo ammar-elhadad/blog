@@ -1,0 +1,43 @@
+---
+import FormattedDate from './FormattedDate.astro';
+import { href } from '../utils';
+import type { SectionKey } from '../consts';
+
+interface Props {
+  section: SectionKey;
+  title: string;
+  description?: string;
+  url: string;
+  pubDate: Date;
+  tags?: string[];
+  /** Optional difficulty / severity pill. */
+  pill?: { kind: 'level' | 'sev'; value: string };
+}
+const { section, title, description, url, pubDate, tags = [], pill } = Astro.props;
+const badgeLabel: Record<SectionKey, string> = {
+  htb: 'writeup',
+  ctf: 'ctf',
+  cve: 'cve',
+  notes: 'notes',
+};
+---
+
+<article class="post-card">
+  <div class="meta">
+    <span class={`badge ${section}`}>{badgeLabel[section]}</span>
+    {
+      pill && (
+        <span class="pill" data-level={pill.kind === 'level' ? pill.value : undefined} data-sev={pill.kind === 'sev' ? pill.value : undefined}>
+          {pill.value}
+        </span>
+      )
+    }
+  </div>
+  <h3><a href={href(url)}>{title}</a></h3>
+  {description && <p class="excerpt">{description}</p>}
+  <div class="meta">
+    <FormattedDate date={pubDate} />
+    {tags.length > 0 && <span class="dot">·</span>}
+    {tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)}
+  </div>
+</article>
