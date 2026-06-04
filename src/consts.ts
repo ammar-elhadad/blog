@@ -23,7 +23,7 @@ export const SITE = {
     twitter: '',
     hackthebox: 'https://app.hackthebox.com/users/2445202',
     mastodon: '',
-    email: 'ammarellhadad@gmail.com',
+    email: 'mailto:ammarellhadad@gmail.com',
   },
 } as const;
 
